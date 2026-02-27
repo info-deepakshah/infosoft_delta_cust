@@ -242,3 +242,7 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+override_doctype_class = {
+    "Request for Quotation": "infosoft_delta_cust.overrides.request_for_quotation.CustomRequestforQuotation"
+}
