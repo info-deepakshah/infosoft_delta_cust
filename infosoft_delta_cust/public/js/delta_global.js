@@ -7,11 +7,16 @@
         let attempts = 0;
         const interval = setInterval(function() {
             attempts++;
+            
+            // Check if DOM sidebar is mounted AND Frappe session is fully loaded
             const sidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
-            if (sidebar) {
+            const frappeReady = (typeof frappe !== 'undefined' && frappe.session && frappe.session.user);
+            
+            if (sidebar && frappeReady) {
                 clearInterval(interval);
                 render_global_dashboard_sidebar();
             }
+            
             if (attempts > 20) { // Timeout after 10 seconds
                 clearInterval(interval);
             }
