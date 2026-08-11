@@ -9,7 +9,8 @@
         const interval = setInterval(function() {
             attempts++;
             
-            const sidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
+            // Query using broader selector (including .sidebar and [class*="sidebar"])
+            const sidebar = document.querySelector('.standard-sidebar, .sidebar, .desk-sidebar, .layout-side, [class*="sidebar"]');
             const frappeReady = (typeof frappe !== 'undefined' && frappe.session && frappe.session.user);
             
             if (sidebar && frappeReady) {
@@ -20,7 +21,11 @@
             
             if (attempts > 20) {
                 clearInterval(interval);
-                console.log("[Global Customization] Check timed out after 10 seconds.");
+                // Print all matching DOM classes to help debug if it fails
+                const matchedElements = Array.from(document.querySelectorAll('[class*="sidebar"], [class*="layout-side"]')).map(el => {
+                    return el.tagName + "." + Array.from(el.classList).join(".");
+                });
+                console.log("[Global Customization] Check timed out. Found elements:", matchedElements);
             }
         }, 500);
     }
@@ -31,7 +36,7 @@
             return;
         }
 
-        const sidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
+        const sidebar = document.querySelector('.standard-sidebar, .sidebar, .desk-sidebar, .layout-side, [class*="sidebar"]');
         if (!sidebar) {
             console.log("[Global Customization] Sidebar element not found in DOM.");
             return;
@@ -147,8 +152,8 @@
                 section.appendChild(link);
             });
 
-            // Re-query sidebar in case it changed during the API call
-            const currentSidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
+            // Re-query sidebar using the broader selector
+            const currentSidebar = document.querySelector('.standard-sidebar, .sidebar, .desk-sidebar, .layout-side, [class*="sidebar"]');
             if (!currentSidebar) {
                 console.log("[Global Customization] Active sidebar disappeared during API call.");
                 return;
