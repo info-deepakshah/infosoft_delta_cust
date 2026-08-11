@@ -1,182 +1,106 @@
 /*
- * Global Navbar Dashboard Shortcut Icon Customization
+ * Global Navbar Workspace Shortcut Customization
  * Injected dynamically on Desk load/page change
  */
 (function() {
-    function render_global_dashboard_icon() {
+    function render_global_dashboard_sidebar() {
         // Prevent duplicate rendering
-        if (document.getElementById('da-global-dashboard-item')) return;
+        if (document.getElementById('da-sidebar-dashboards-section')) return;
 
-        let container = null;
-        let insertBeforeNode = null;
+        // Try to find the left sidebar container
+        const sidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
+        if (!sidebar) return;
 
-        // 1. Try to find the notification/bell icon in the new v16 sidebar
-        const v16Bell = document.querySelector('.desktop-notification-icon, .navbar-notification, .notifications-icon, [data-route="List/Notification Log"]');
-        if (v16Bell) {
-            container = v16Bell.parentNode;
-            insertBeforeNode = v16Bell;
-        }
+        const userEmail = frappe.session.user;
 
-        // 2. Try to find the legacy top navbar
-        if (!container) {
-            const legacyNav = document.querySelector('.navbar .navbar-collapse, .navbar .navbar-right, .navbar-right');
-            if (legacyNav) {
-                container = legacyNav;
-                insertBeforeNode = legacyNav.firstChild;
-            }
-        }
-
-        // 3. Try to find the main sidebar container
-        if (!container) {
-            const mainSidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar, .sidebar-items');
-            if (mainSidebar) {
-                container = mainSidebar;
-                insertBeforeNode = mainSidebar.firstChild;
-            }
-        }
-
-        if (!container) {
-            console.log("[Global Dashboard] Could not find navbar or sidebar container in the DOM.");
-            return;
-        }
-
-        const itemContainer = document.createElement('div');
-        itemContainer.id = 'da-global-dashboard-item';
-        itemContainer.className = 'da-dashboard-nav-item';
-        itemContainer.style.cssText = 'position: relative; cursor: pointer; padding: 12px 10px; font-size: 16px; display: flex; align-items: center; justify-content: center;';
-        
-        // 📊 Icon Trigger Markup
-        itemContainer.innerHTML = `
-            <span id="da-global-dashboard-trigger" title="My Dashboards" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; font-size: 16px; padding: 2px;">📊</span>
-        `;
-
-        // Insert at the resolved position (next to bell or top of sidebar)
-        container.insertBefore(itemContainer, insertBeforeNode);
-
-        // Click handler to load/show dashboards list
-        itemContainer.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fetch_and_handle_dashboards();
-        });
-
-        // Click outside dropdown to dismiss it
-        window.addEventListener('click', function(e) {
-            const drop = document.getElementById('da-global-dashboard-drop');
-            if (drop) {
-                drop.style.display = 'none';
-            }
-        });
-    }
-
-    let cached_dashboards = null;
-
-    function fetch_and_handle_dashboards() {
-        // Toggle or create dropdown in body to prevent sidebar overflow clipping
-        let drop = document.getElementById('da-global-dashboard-drop');
-        if (!drop) {
-            drop = document.createElement('div');
-            drop.id = 'da-global-dashboard-drop';
-            drop.className = 'da-dashboard-dropdown';
-            drop.style.cssText = 'display: none; position: fixed; width: 260px; background: #ffffff; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100002; overflow: hidden; font-family: Arial, sans-serif; flex-direction: column;';
-            drop.innerHTML = `
-                <div class="da-dashboard-header" style="padding: 10px 15px; background: #fafafa; border-bottom: 1px solid rgba(0,0,0,0.06); font-weight: bold; font-size: 12px; color: #555; display: flex; justify-content: space-between; align-items: center;">
-                    <span>My Dashboards</span>
-                </div>
-                <div id="da-global-dashboard-list" style="max-height: 250px; overflow-y: auto;">
-                    <div style="padding: 15px; text-align: center; color: #888; font-size: 12px;">Loading dashboards...</div>
-                </div>
-            `;
-            document.body.appendChild(drop);
-        }
-
-        // Use memory cache for instantaneous response
-        if (cached_dashboards !== null) {
-            handle_dashboard_selection(cached_dashboards);
-            return;
-        }
-
-        // Query database for custom (private) dashboards owned by logged-in user
+        // Query database for private workspaces
         frappe.call({
             method: "frappe.client.get_list",
             args: {
-                doctype: "Dashboard",
+                doctype: "Workspace",
                 filters: {
-                    "is_standard": 0,
-                    "owner": frappe.session.user
+                    "public": 0
                 },
-                fields: ["name"],
-                limit_page_length: 50
+                fields: ["name", "title", "owner"],
+                limit_page_length: 100
             },
             callback: function(r) {
-                const list = r.message || [];
-                cached_dashboards = list;
-                handle_dashboard_selection(list);
+                const workspaces = r.message || [];
+                
+                // Filter workspaces: matches if name contains user's email, or if user is owner
+                const userWorkspaces = workspaces.filter(w => {
+                    return w.name.includes(userEmail) || w.owner === userEmail;
+                });
+
+                if (userWorkspaces.length === 0) return;
+
+                // Create a container for our workspaces section
+                const section = document.createElement('div');
+                section.id = 'da-sidebar-dashboards-section';
+                section.style.cssText = 'margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;';
+
+                // Section Title Label
+                const title = document.createElement('div');
+                title.style.cssText = 'padding: 6px 16px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #888; letter-spacing: 0.8px;';
+                title.innerText = 'My Workspaces';
+                section.appendChild(title);
+
+                // Add links for each workspace
+                userWorkspaces.forEach(w => {
+                    // Strip the user email suffix from name for a clean display label
+                    let displayName = w.name.split('-' + userEmail)[0] || w.title || w.name;
+                    displayName = displayName.trim();
+
+                    const link = document.createElement('a');
+                    link.className = 'da-sidebar-item';
+                    link.style.cssText = 'display: flex; align-items: center; padding: 7px 16px; font-size: 12.5px; color: #444; text-decoration: none; transition: background 0.15s, color 0.15s; border-radius: 4px; margin: 2px 8px; cursor: pointer;';
+                    link.href = `/app/workspace/${encodeURIComponent(w.name)}`;
+                    
+                    // SPA route transitions on click
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        frappe.set_route('workspace', w.name);
+                    });
+
+                    link.innerHTML = `
+                        <span style="margin-right: 8px; font-size: 13px; display: flex; align-items: center; justify-content: center; width: 16px;">🏠</span>
+                        <span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</span>
+                    `;
+                    section.appendChild(link);
+                });
+
+                // Find where to insert: usually under the standard list, or at the bottom
+                // We'll append it before the user profile element (usually at the very bottom, or just append to the sidebar wrapper)
+                const userProfile = sidebar.querySelector('.user-menu, [class*="user-profile"], [class*="avatar"]');
+                if (userProfile && userProfile.parentNode === sidebar) {
+                    sidebar.insertBefore(section, userProfile);
+                } else {
+                    sidebar.appendChild(section);
+                }
+
+                // Inject hover style once
+                if (!document.getElementById('da-sidebar-item-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'da-sidebar-item-style';
+                    style.innerHTML = `
+                        .da-sidebar-item:hover {
+                            background-color: #f1f5f9 !important;
+                            color: var(--primary) !important;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
             }
         });
-    }
-
-    function handle_dashboard_selection(dashboards) {
-        const drop = document.getElementById('da-global-dashboard-drop');
-        const listContainer = document.getElementById('da-global-dashboard-list');
-        const trigger = document.getElementById('da-global-dashboard-item');
-        if (!drop || !listContainer || !trigger) return;
-
-        // Case 1: No private dashboards
-        if (dashboards.length === 0) {
-            frappe.show_alert({message: "No private dashboards configured for your account.", indicator: "orange"});
-            drop.style.display = 'none';
-            return;
-        }
-
-        // Case 2: Exactly 1 private dashboard -> Redirect immediately
-        if (dashboards.length === 1) {
-            frappe.set_route("dashboard-view", dashboards[0].name);
-            return;
-        }
-
-        // Position dropdown relative to the trigger icon's viewport coordinates
-        const rect = trigger.getBoundingClientRect();
-        drop.style.top = rect.bottom + 'px';
-        drop.style.left = rect.left + 'px';
-
-        // Case 3: More than 1 private dashboard -> Toggle dropdown list
-        if (drop.style.display === 'flex') {
-            drop.style.display = 'none';
-            return;
-        }
-
-        let html = '';
-        dashboards.forEach(d => {
-            html += `
-                <div class="da-dashboard-item" style="padding: 10px 15px; border-bottom: 1px solid rgba(0,0,0,0.04); font-size: 12.5px; cursor: pointer; color: #333; transition: background 0.2s;" onclick="frappe.set_route('dashboard-view', '${d.name}')">
-                    📊 <span style="font-weight: 500;">${d.name}</span>
-                </div>
-            `;
-        });
-        listContainer.innerHTML = html;
-        drop.style.display = 'flex';
-
-        // Inject dynamic hover styles once
-        if (!document.getElementById('da-dashboard-item-style')) {
-            const style = document.createElement('style');
-            style.id = 'da-dashboard-item-style';
-            style.innerHTML = `
-                .da-dashboard-item:hover {
-                    background-color: #f1f5f9 !important;
-                    color: var(--primary) !important;
-                }
-            `;
-            document.head.appendChild(style);
-        }
     }
 
     // Bind listeners
     if (typeof frappe !== 'undefined') {
         $(document).ready(function() {
-            render_global_dashboard_icon();
+            render_global_dashboard_sidebar();
         });
         $(document).on('page-change', function() {
-            render_global_dashboard_icon();
+            render_global_dashboard_sidebar();
         });
     }
 })();
