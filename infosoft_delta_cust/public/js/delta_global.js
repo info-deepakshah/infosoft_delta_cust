@@ -119,11 +119,13 @@
                 const link = document.createElement('a');
                 link.className = 'da-sidebar-item';
                 link.style.cssText = 'display: flex; align-items: center; padding: 7px 16px; font-size: 12.5px; color: #444; text-decoration: none; transition: background 0.15s, color 0.15s; border-radius: 4px; margin: 2px 8px; cursor: pointer;';
-                link.href = `/app/workspace/${encodeURIComponent(w.name)}`;
+                
+                // Route to the actual rendered workspace page (e.g. /app/[workspace-name])
+                link.href = `/app/${encodeURIComponent(w.name)}`;
                 
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    frappe.set_route('workspace', w.name);
+                    frappe.set_route(w.name);
                 });
 
                 link.innerHTML = `
@@ -138,6 +140,8 @@
                 const link = document.createElement('a');
                 link.className = 'da-sidebar-item';
                 link.style.cssText = 'display: flex; align-items: center; padding: 7px 16px; font-size: 12.5px; color: #444; text-decoration: none; transition: background 0.15s, color 0.15s; border-radius: 4px; margin: 2px 8px; cursor: pointer;';
+                
+                // Route to the dashboard view
                 link.href = `/app/dashboard-view/${encodeURIComponent(d.name)}`;
                 
                 link.addEventListener('click', function(e) {
