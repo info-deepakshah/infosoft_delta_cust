@@ -68,16 +68,16 @@
         let workspaces = [];
         let dashboards = [];
 
-        // Step 1: Fetch private Workspaces
+        // Step 1: Fetch custom workspaces (containing @ in their name, public or private)
         frappe.call({
             method: "frappe.client.get_list",
             args: {
                 doctype: "Workspace",
-                filters: {
-                    "public": 0
-                },
-                fields: ["name", "title", "owner"],
-                limit_page_length: 100
+                filters: [
+                    ["name", "like", "%@%"]
+                ],
+                fields: ["name", "title", "owner", "public"],
+                limit_page_length: 200
             },
             callback: function(r1) {
                 workspaces = r1.message || [];
