@@ -9,25 +9,43 @@
         const interval = setInterval(function() {
             attempts++;
             
-            // Query using broader selector (including .sidebar and [class*="sidebar"])
             const sidebar = document.querySelector('.standard-sidebar, .sidebar, .desk-sidebar, .layout-side, [class*="sidebar"]');
             const frappeReady = (typeof frappe !== 'undefined' && frappe.session && frappe.session.user);
             
             if (sidebar && frappeReady) {
                 clearInterval(interval);
                 console.log("[Global Customization] Sidebar & Frappe ready. Triggering render...");
+                hotpatch_sidebar();
                 render_global_dashboard_sidebar();
             }
             
             if (attempts > 20) {
                 clearInterval(interval);
-                // Print all matching DOM classes to help debug if it fails
                 const matchedElements = Array.from(document.querySelectorAll('[class*="sidebar"], [class*="layout-side"]')).map(el => {
                     return el.tagName + "." + Array.from(el.classList).join(".");
                 });
                 console.log("[Global Customization] Check timed out. Found elements:", matchedElements);
             }
         }, 500);
+    }
+
+    // Framework Hotpatch to prevent sidebar crash on custom/private workspaces missing parent pages
+    function hotpatch_sidebar() {
+        if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.Sidebar && !frappe.ui.Sidebar.prototype.is_hotpatched) {
+            frappe.ui.Sidebar.prototype.is_hotpatched = true;
+            
+            const original_choose_app_name = frappe.ui.Sidebar.prototype.choose_app_name;
+            frappe.ui.Sidebar.prototype.choose_app_name = function(workspace) {
+                try {
+                    let res = original_choose_app_name.apply(this, arguments);
+                    if (res) return res;
+                } catch (e) {
+                    console.log("[Global Customization] Caught sidebar choose_app_name crash, applying 'erpnext' fallback context.");
+                }
+                return "erpnext"; // Fallback to avoid TypeError crash
+            };
+            console.log("[Global Customization] Successfully hotpatched Sidebar.choose_app_name!");
+        }
     }
 
     function render_global_dashboard_sidebar() {
