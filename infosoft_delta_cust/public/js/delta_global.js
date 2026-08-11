@@ -140,12 +140,13 @@
                 link.className = 'da-sidebar-item';
                 link.style.cssText = 'display: flex; align-items: center; padding: 7px 16px; font-size: 12.5px; color: #444; text-decoration: none; transition: background 0.15s, color 0.15s; border-radius: 4px; margin: 2px 8px; cursor: pointer;';
                 
-                // Route to the Workspace view
-                link.href = `/app/workspace/${encodeURIComponent(w.name)}`;
+                // Route to the actual rendered page using lowercase name (e.g. /app/[lowercase-workspace-name])
+                const routeName = w.name.toLowerCase();
+                link.href = `/app/${encodeURIComponent(routeName)}`;
                 
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    frappe.set_route('workspace', w.name);
+                    frappe.set_route(routeName);
                 });
 
                 link.innerHTML = `
