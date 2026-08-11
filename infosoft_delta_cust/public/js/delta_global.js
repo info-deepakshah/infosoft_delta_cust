@@ -152,20 +152,28 @@
                 section.appendChild(link);
             });
 
-            // Re-query sidebar using the broader selector
+            // Re-query sidebar
             const currentSidebar = document.querySelector('.standard-sidebar, .sidebar, .desk-sidebar, .layout-side, [class*="sidebar"]');
             if (!currentSidebar) {
                 console.log("[Global Customization] Active sidebar disappeared during API call.");
                 return;
             }
 
-            const userProfile = currentSidebar.querySelector('.user-menu, [class*="user-profile"], [class*="avatar"]');
-            if (userProfile && userProfile.parentNode === currentSidebar) {
-                currentSidebar.insertBefore(section, userProfile);
+            // Find the list container that holds all standard sidebar links (BOM, Work Order, Settings, etc.)
+            const linksContainer = currentSidebar.querySelector('.sidebar-items, .sidebar-menu, [class*="sidebar-items"], [class*="sidebar-menu"]');
+            if (linksContainer) {
+                linksContainer.appendChild(section);
+                console.log("[Global Customization] Successfully appended shortcuts section to links container!");
             } else {
-                currentSidebar.appendChild(section);
+                // Fallback: append before the user profile
+                const userProfile = currentSidebar.querySelector('.user-menu, [class*="user-profile"], [class*="avatar"]');
+                if (userProfile && userProfile.parentNode === currentSidebar) {
+                    currentSidebar.insertBefore(section, userProfile);
+                } else {
+                    currentSidebar.appendChild(section);
+                }
+                console.log("[Global Customization] Appended shortcuts section to sidebar wrapper (fallback).");
             }
-            console.log("[Global Customization] Successfully rendered shortcuts section!");
 
             if (!document.getElementById('da-sidebar-item-style')) {
                 const style = document.createElement('style');
