@@ -3,6 +3,21 @@
  * Injected dynamically on Desk load/page change
  */
 (function() {
+    function init_sidebar_injection() {
+        let attempts = 0;
+        const interval = setInterval(function() {
+            attempts++;
+            const sidebar = document.querySelector('.desk-sidebar, .layout-side, .sidebar-left, .standard-sidebar');
+            if (sidebar) {
+                clearInterval(interval);
+                render_global_dashboard_sidebar();
+            }
+            if (attempts > 20) { // Timeout after 10 seconds
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
     function render_global_dashboard_sidebar() {
         // Prevent duplicate rendering
         if (document.getElementById('da-sidebar-dashboards-section')) return;
@@ -49,6 +64,9 @@
         });
 
         function build_sidebar_section(workspaces, dashboards) {
+            // Prevent duplicate rendering if triggered concurrently
+            if (document.getElementById('da-sidebar-dashboards-section')) return;
+
             // Filter Workspaces matching user
             const userWorkspaces = workspaces.filter(w => {
                 return w.name.includes(userEmail) || w.owner === userEmail;
@@ -140,10 +158,10 @@
     // Bind listeners
     if (typeof frappe !== 'undefined') {
         $(document).ready(function() {
-            render_global_dashboard_sidebar();
+            init_sidebar_injection();
         });
         $(document).on('page-change', function() {
-            render_global_dashboard_sidebar();
+            init_sidebar_injection();
         });
     }
 })();
