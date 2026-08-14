@@ -5,6 +5,16 @@
 (function() {
     function init_sidebar_injection() {
         console.log("[Global Customization] Initializing sidebar check...");
+        
+        // Only run on Workspace / Desk routes. Prevent rendering on Forms, Reports, lists or Print views
+        if (typeof frappe !== 'undefined' && frappe.get_route) {
+            const route = frappe.get_route();
+            if (route && route[0] && !['workspaces', 'workspace', 'Desk', 'desk'].includes(route[0])) {
+                console.log("[Global Customization] Non-workspace route detected:", route[0], "- skipping sidebar injection.");
+                return;
+            }
+        }
+
         let attempts = 0;
         const interval = setInterval(function() {
             attempts++;
