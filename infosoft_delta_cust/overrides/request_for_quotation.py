@@ -1,8 +1,8 @@
 import frappe
-from erpnext.buying.doctype.request_for_quotation.request_for_quotation import RequestForQuotation
+from erpnext.buying.doctype.request_for_quotation.request_for_quotation import RequestforQuotation
 
 
-class CustomRequestforQuotation(RequestForQuotation):
+class CustomRequestforQuotation(RequestforQuotation):
     def send_email(self, data, sender, subject, message, attachments):
         """
         Override ERPNext RFQ supplier email to include internal CC list from RFQ:
