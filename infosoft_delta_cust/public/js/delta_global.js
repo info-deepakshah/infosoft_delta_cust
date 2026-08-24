@@ -319,6 +319,37 @@
                     console.log("[Global Customization] Successfully injected standalone v16 full-width styles!");
                 }
             }
+
+            // Direct DOM Property Enforcement for Frappe v16 inline styles
+            document.querySelectorAll('.section-body, .section-head, .form-section .section-body').forEach(function(el) {
+                if (el.style.maxWidth !== '100%' || el.style.marginLeft !== '0px') {
+                    el.style.setProperty('max-width', '100%', 'important');
+                    el.style.setProperty('width', '100%', 'important');
+                    el.style.setProperty('margin-left', '0px', 'important');
+                    el.style.setProperty('margin-right', '0px', 'important');
+                }
+            });
+
+            // Attach MutationObserver for dynamically rendered SPA forms
+            if (!window.__delta_section_observer && typeof MutationObserver !== 'undefined' && document.body) {
+                window.__delta_section_observer = new MutationObserver(function() {
+                    document.querySelectorAll('.section-body, .section-head, .form-section .section-body').forEach(function(el) {
+                        if (el.style.maxWidth !== '100%' || el.style.marginLeft !== '0px') {
+                            el.style.setProperty('max-width', '100%', 'important');
+                            el.style.setProperty('width', '100%', 'important');
+                            el.style.setProperty('margin-left', '0px', 'important');
+                            el.style.setProperty('margin-right', '0px', 'important');
+                        }
+                    });
+                });
+                window.__delta_section_observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['style', 'class']
+                });
+                console.log("[Global Customization] Successfully initialized v16 MutationObserver!");
+            }
         } catch (e) {
             console.error("[Global Customization] Error injecting full-width styles:", e);
         }
@@ -335,6 +366,6 @@
             init_sidebar_injection();
         });
         // Continuous interval backup to ensure dynamically rendered routes stay full width
-        setInterval(inject_full_width_styles, 1000);
+        setInterval(inject_full_width_styles, 500);
     }
 })();
