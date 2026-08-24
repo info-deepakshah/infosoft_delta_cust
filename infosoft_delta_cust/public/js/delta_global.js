@@ -224,12 +224,57 @@
         }
     }
 
+    function inject_full_width_styles() {
+        document.documentElement.style.setProperty('--page-max-width', '100%', 'important');
+        document.documentElement.style.setProperty('--form-max-width', '100%', 'important');
+        document.documentElement.style.setProperty('--content-max-width', '100%', 'important');
+
+        if (!document.getElementById('delta-full-width-style')) {
+            const style = document.createElement('style');
+            style.id = 'delta-full-width-style';
+            style.innerHTML = `
+                :root {
+                    --page-max-width: 100% !important;
+                    --form-max-width: 100% !important;
+                    --content-max-width: 100% !important;
+                }
+                .page-body,
+                .page-container,
+                .page-content,
+                .layout-main,
+                .layout-main-section-wrapper,
+                .layout-main-section,
+                .form-page,
+                .form-layout,
+                .form-container,
+                .form-body,
+                .form-section,
+                .frappe-card,
+                .page-card {
+                    max-width: 100% !important;
+                    width: 100% !important;
+                }
+                .form-grid,
+                .grid-body,
+                .grid-row,
+                .grid-row-open {
+                    max-width: 100% !important;
+                    width: 100% !important;
+                }
+            `;
+            document.head.appendChild(style);
+            console.log("[Global Customization] Successfully injected v16 full-width form layout styles!");
+        }
+    }
+
     // Bind listeners
     if (typeof frappe !== 'undefined') {
         $(document).ready(function() {
+            inject_full_width_styles();
             init_sidebar_injection();
         });
         $(document).on('page-change', function() {
+            inject_full_width_styles();
             init_sidebar_injection();
         });
     }
