@@ -1,7 +1,15 @@
 /*
- * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16 Target)
- * Overrides Frappe v16 .section-body and .section-head 980px max-width & auto-margins.
+ * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16 High Specificity)
+ * Overrides Frappe v16 .section-body and .section-head max-widths, CSS variables, and margins.
  */
+*, *::before, *::after {
+    --page-max-width: 100% !important;
+    --form-max-width: 100% !important;
+    --content-max-width: 100% !important;
+    --container-width: 100% !important;
+    --layout-main-width: 100% !important;
+}
+
 :root, html, body {
     --page-max-width: 100% !important;
     --form-max-width: 100% !important;
@@ -10,7 +18,13 @@
     --layout-main-width: 100% !important;
 }
 
-/* Primary Frappe v16 Form Section Body & Head Override */
+/* Primary Frappe v16 Form Section Body & Head High-Specificity Overrides */
+html body .section-body,
+html body .section-head,
+html body .form-section .section-body,
+html body .form-section .section-head,
+html body div.section-body,
+html body div.section-head,
 .section-body,
 .section-head,
 .form-section .section-body,

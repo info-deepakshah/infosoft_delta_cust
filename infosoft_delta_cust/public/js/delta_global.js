@@ -3,6 +3,8 @@
  * Injected dynamically on Desk load/page change
  */
 (function() {
+    inject_full_width_styles();
+
     function init_sidebar_injection() {
         console.log("[Global Customization] Initializing sidebar check...");
         
@@ -237,6 +239,13 @@
             const style = document.createElement('style');
             style.id = 'delta-full-width-style';
             style.innerHTML = `
+                *, *::before, *::after {
+                    --page-max-width: 100% !important;
+                    --form-max-width: 100% !important;
+                    --content-max-width: 100% !important;
+                    --container-width: 100% !important;
+                    --layout-main-width: 100% !important;
+                }
                 :root, html, body {
                     --page-max-width: 100% !important;
                     --form-max-width: 100% !important;
@@ -244,6 +253,12 @@
                     --container-width: 100% !important;
                     --layout-main-width: 100% !important;
                 }
+                html body .section-body,
+                html body .section-head,
+                html body .form-section .section-body,
+                html body .form-section .section-head,
+                html body div.section-body,
+                html body div.section-head,
                 .section-body,
                 .section-head,
                 .form-section .section-body,
@@ -296,7 +311,7 @@
                 }
             `;
             document.head.appendChild(style);
-            console.log("[Global Customization] Successfully injected v16 full-width section-body styles!");
+            console.log("[Global Customization] Successfully injected high specificity v16 full-width section-body styles!");
         }
     }
 
