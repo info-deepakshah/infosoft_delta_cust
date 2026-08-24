@@ -231,6 +231,7 @@
         document.documentElement.style.setProperty('--form-max-width', '100%', 'important');
         document.documentElement.style.setProperty('--content-max-width', '100%', 'important');
         document.documentElement.style.setProperty('--container-width', '100%', 'important');
+        document.documentElement.style.setProperty('--layout-main-width', '100%', 'important');
 
         if (!document.getElementById('delta-full-width-style')) {
             const style = document.createElement('style');
@@ -241,6 +242,7 @@
                     --form-max-width: 100% !important;
                     --content-max-width: 100% !important;
                     --container-width: 100% !important;
+                    --layout-main-width: 100% !important;
                 }
                 .container,
                 .container-fluid,
@@ -248,10 +250,7 @@
                 .container-md,
                 .container-lg,
                 .container-xl,
-                .container-xxl {
-                    max-width: 100% !important;
-                    width: 100% !important;
-                }
+                .container-xxl,
                 .page-container,
                 .page-body,
                 .page-wrapper,
@@ -265,11 +264,25 @@
                 .form-container,
                 .form-body,
                 .form-section,
+                .section-head,
                 .section-body,
                 .frappe-card,
-                .page-card {
+                .page-card,
+                .form-page-container,
+                .form-dashboard,
+                .form-tabs {
                     max-width: 100% !important;
                     width: 100% !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    padding-left: 15px !important;
+                    padding-right: 15px !important;
+                }
+                .layout-main-section-wrapper,
+                .page-body,
+                .form-layout {
+                    justify-content: flex-start !important;
+                    align-items: stretch !important;
                 }
                 .form-grid,
                 .grid-body,
@@ -277,10 +290,12 @@
                 .grid-row-open {
                     max-width: 100% !important;
                     width: 100% !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
                 }
             `;
             document.head.appendChild(style);
-            console.log("[Global Customization] Successfully injected v16 full-width form layout styles!");
+            console.log("[Global Customization] Successfully injected master v16 full-width form layout styles!");
         }
     }
 
