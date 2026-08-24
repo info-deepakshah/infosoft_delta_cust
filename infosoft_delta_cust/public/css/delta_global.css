@@ -1,36 +1,52 @@
 /*
  * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16)
- * Overrides CSS variables and container max-widths across all form pages.
+ * Overrides Bootstrap container breakpoints, CSS variables, and Frappe v16 layout wrappers.
  */
-:root {
+:root, html, body {
     --page-max-width: 100% !important;
     --form-max-width: 100% !important;
     --content-max-width: 100% !important;
+    --container-width: 100% !important;
 }
 
-@media screen {
-    .page-body,
-    .page-container,
-    .page-content,
-    .layout-main,
-    .layout-main-section-wrapper,
-    .layout-main-section,
-    .form-page,
-    .form-layout,
-    .form-container,
-    .form-body,
-    .form-section,
-    .frappe-card,
-    .page-card {
-        max-width: 100% !important;
-        width: 100% !important;
-    }
+/* Override Bootstrap container max-width breakpoints in Frappe v16 */
+.container,
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+    max-width: 100% !important;
+    width: 100% !important;
+}
 
-    .form-grid,
-    .grid-body,
-    .grid-row,
-    .grid-row-open {
-        max-width: 100% !important;
-        width: 100% !important;
-    }
+/* Frappe Desk Layout Wrappers */
+.page-container,
+.page-body,
+.page-wrapper,
+.page-content,
+.layout-main,
+.layout-main-section-wrapper,
+.layout-main-section,
+.body-sidebar-container,
+.form-page,
+.form-layout,
+.form-container,
+.form-body,
+.form-section,
+.section-body,
+.frappe-card,
+.page-card {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Child table grids */
+.form-grid,
+.grid-body,
+.grid-row,
+.grid-row-open {
+    max-width: 100% !important;
+    width: 100% !important;
 }

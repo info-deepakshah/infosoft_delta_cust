@@ -225,30 +225,47 @@
     }
 
     function inject_full_width_styles() {
+        if (typeof document === 'undefined') return;
+
         document.documentElement.style.setProperty('--page-max-width', '100%', 'important');
         document.documentElement.style.setProperty('--form-max-width', '100%', 'important');
         document.documentElement.style.setProperty('--content-max-width', '100%', 'important');
+        document.documentElement.style.setProperty('--container-width', '100%', 'important');
 
         if (!document.getElementById('delta-full-width-style')) {
             const style = document.createElement('style');
             style.id = 'delta-full-width-style';
             style.innerHTML = `
-                :root {
+                :root, html, body {
                     --page-max-width: 100% !important;
                     --form-max-width: 100% !important;
                     --content-max-width: 100% !important;
+                    --container-width: 100% !important;
                 }
-                .page-body,
+                .container,
+                .container-fluid,
+                .container-sm,
+                .container-md,
+                .container-lg,
+                .container-xl,
+                .container-xxl {
+                    max-width: 100% !important;
+                    width: 100% !important;
+                }
                 .page-container,
+                .page-body,
+                .page-wrapper,
                 .page-content,
                 .layout-main,
                 .layout-main-section-wrapper,
                 .layout-main-section,
+                .body-sidebar-container,
                 .form-page,
                 .form-layout,
                 .form-container,
                 .form-body,
                 .form-section,
+                .section-body,
                 .frappe-card,
                 .page-card {
                     max-width: 100% !important;
@@ -277,5 +294,7 @@
             inject_full_width_styles();
             init_sidebar_injection();
         });
+        // Continuous interval backup to ensure dynamically rendered routes stay full width
+        setInterval(inject_full_width_styles, 1000);
     }
 })();
