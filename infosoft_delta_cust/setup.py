@@ -61,6 +61,7 @@ frappe.ui.form.on(cur_frm.doctype, {
 });
 """
 
+@frappe.whitelist()
 def install_full_width_client_script():
     """
     Automatically creates or updates database Client Scripts for all main DocTypes during bench migrate.
