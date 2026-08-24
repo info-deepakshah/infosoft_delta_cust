@@ -1,0 +1,24 @@
+/*
+ * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16)
+ * Expands all form pages and tool pages to 100% width, matching List View behavior.
+ */
+@media screen {
+    .page-body {
+        max-width: 100% !important;
+    }
+
+    .form-page,
+    .form-layout,
+    .layout-main-section-wrapper,
+    .layout-main-section {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .form-grid,
+    .grid-body,
+    .grid-row,
+    .grid-row-open {
+        max-width: 100% !important;
+    }
+}
