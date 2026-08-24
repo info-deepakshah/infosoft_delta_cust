@@ -200,10 +200,9 @@ app_include_js = [
 
 # ignore_links_on_delete = ["Communication", "ToDo"]
 
-# Request Events
+# Migration Events
 # ----------------
-# before_request = ["infosoft_delta_cust.utils.before_request"]
-# after_request = ["infosoft_delta_cust.utils.after_request"]
+after_migrate = ["infosoft_delta_cust.setup.install_full_width_client_script"]
 
 # Job Events
 # ----------
