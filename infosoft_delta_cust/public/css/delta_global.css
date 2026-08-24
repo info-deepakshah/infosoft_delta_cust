@@ -1,6 +1,6 @@
 /*
- * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16 Master Override)
- * Overrides Bootstrap container breakpoints, margin-auto centering, padding-offsets, and CSS variables.
+ * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16 Target)
+ * Overrides Frappe v16 .section-body and .section-head 980px max-width & auto-margins.
  */
 :root, html, body {
     --page-max-width: 100% !important;
@@ -10,7 +10,20 @@
     --layout-main-width: 100% !important;
 }
 
-/* Override Bootstrap containers & Frappe v16 Form Wrappers */
+/* Primary Frappe v16 Form Section Body & Head Override */
+.section-body,
+.section-head,
+.form-section .section-body,
+.form-section .section-head,
+div.section-body,
+div.section-head {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Supporting Page & Form Layout Wrappers */
 .container,
 .container-fluid,
 .container-sm,
@@ -31,8 +44,6 @@
 .form-container,
 .form-body,
 .form-section,
-.section-head,
-.section-body,
 .frappe-card,
 .page-card,
 .form-page-container,
@@ -42,16 +53,6 @@
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-}
-
-/* Reset parent flex container centering */
-.layout-main-section-wrapper,
-.page-body,
-.form-layout {
-    justify-content: flex-start !important;
-    align-items: stretch !important;
 }
 
 /* Child table grids */

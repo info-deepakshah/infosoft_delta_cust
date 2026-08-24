@@ -244,6 +244,17 @@
                     --container-width: 100% !important;
                     --layout-main-width: 100% !important;
                 }
+                .section-body,
+                .section-head,
+                .form-section .section-body,
+                .form-section .section-head,
+                div.section-body,
+                div.section-head {
+                    max-width: 100% !important;
+                    width: 100% !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                }
                 .container,
                 .container-fluid,
                 .container-sm,
@@ -264,8 +275,6 @@
                 .form-container,
                 .form-body,
                 .form-section,
-                .section-head,
-                .section-body,
                 .frappe-card,
                 .page-card,
                 .form-page-container,
@@ -275,14 +284,6 @@
                     width: 100% !important;
                     margin-left: 0 !important;
                     margin-right: 0 !important;
-                    padding-left: 15px !important;
-                    padding-right: 15px !important;
-                }
-                .layout-main-section-wrapper,
-                .page-body,
-                .form-layout {
-                    justify-content: flex-start !important;
-                    align-items: stretch !important;
                 }
                 .form-grid,
                 .grid-body,
@@ -295,7 +296,7 @@
                 }
             `;
             document.head.appendChild(style);
-            console.log("[Global Customization] Successfully injected master v16 full-width form layout styles!");
+            console.log("[Global Customization] Successfully injected v16 full-width section-body styles!");
         }
     }
 
