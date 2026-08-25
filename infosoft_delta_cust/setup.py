@@ -55,12 +55,17 @@ frappe.ui.form.on(cur_frm.doctype, {
                 el.style.setProperty('margin-left', '0px', 'important');
                 el.style.setProperty('margin-right', '0px', 'important');
             });
-            document.querySelectorAll('.layout-side-section, .form-sidebar, .form-sidebar-container').forEach(function(el) {
+            document.querySelectorAll('.form-page .layout-side-section, .form-layout .layout-side-section, .form-sidebar, .form-sidebar-container').forEach(function(el) {
                 el.style.setProperty('display', 'block', 'important');
                 el.style.setProperty('visibility', 'visible', 'important');
                 el.style.setProperty('opacity', '1', 'important');
                 el.style.setProperty('width', '260px', 'important');
                 el.style.setProperty('flex', '0 0 260px', 'important');
+            });
+            document.querySelectorAll('.list-page .layout-side-section:empty').forEach(function(el) {
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('width', '0px', 'important');
+                el.style.setProperty('flex', '0 0 0px', 'important');
             });
         } catch (e) {
             console.error('[Full Width Customization] Error enforcing layout:', e);

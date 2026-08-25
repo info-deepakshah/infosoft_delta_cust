@@ -1,6 +1,6 @@
 /*
- * Infosoft Delta Customization - Global Full-Width Form Layout with Form Sidebar Preservation
- * Overrides Frappe Desk container max-widths while keeping the right sidebar (Attachments, Print, Tags) intact.
+ * Infosoft Delta Customization - Global Full-Width Form Layout with Form Sidebar & List View Fixes
+ * Full width form layout with right sidebar preservation on Forms and full-width List Views.
  */
 *, *::before, *::after {
     --page-max-width: 100% !important;
@@ -44,7 +44,7 @@ html body [data-page-route],
     margin-right: 0 !important;
 }
 
-/* Flexbox Layout Main Section (Takes remaining space beside right sidebar) */
+/* Layout Main Section (Takes full width in List View and flex width in Form View) */
 html body .layout-main,
 .layout-main {
     display: flex !important;
@@ -62,11 +62,13 @@ html body .layout-main-section,
     margin-right: 0 !important;
 }
 
-/* Preserve Right Form Sidebar (Attachments, Print, Tags, Assignee, Timeline) */
-html body .layout-side-section,
+/* Preserve Right Form Sidebar ON FORM PAGES ONLY (Attachments, Print, Tags, Assignee, Timeline) */
+html body .form-page .layout-side-section,
+html body .form-layout .layout-side-section,
 html body .form-sidebar,
 html body .form-sidebar-container,
-.layout-side-section,
+.form-page .layout-side-section,
+.form-layout .layout-side-section,
 .form-sidebar,
 .form-sidebar-container {
     flex: 0 0 260px !important;
@@ -76,6 +78,14 @@ html body .form-sidebar-container,
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* List View Layout: Ensure list page side section doesn't leave empty space if empty/hidden */
+html body .list-page .layout-side-section:empty,
+.list-page .layout-side-section:empty {
+    display: none !important;
+    width: 0 !important;
+    flex: 0 0 0 !important;
 }
 
 /* Primary Form Section Body, Head & Card Full-Width Overrides */
@@ -107,19 +117,24 @@ div.form-section,
     margin-right: 0 !important;
 }
 
-/* Child table grids */
+/* Child table grids & List View table containers */
 html body .form-grid,
 html body .grid-body,
 html body .grid-row,
 html body .grid-row-open,
+html body .frappe-list,
+html body .result,
 .form-grid,
 .grid-body,
 .grid-row,
-.grid-row-open {
+.grid-row-open,
+.frappe-list,
+.result {
     max-width: 100% !important;
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+
 
 
