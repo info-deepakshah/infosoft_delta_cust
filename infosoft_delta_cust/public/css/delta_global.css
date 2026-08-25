@@ -1,6 +1,6 @@
 /*
- * Infosoft Delta Customization - Global Full-Width Form Layout (Frappe v16 High Specificity)
- * Overrides Frappe v16 .section-body and .section-head max-widths, CSS variables, and margins.
+ * Infosoft Delta Customization - Global Full-Width Form Layout with Form Sidebar Preservation
+ * Overrides Frappe Desk container max-widths while keeping the right sidebar (Attachments, Print, Tags) intact.
  */
 *, *::before, *::after {
     --page-max-width: 100% !important;
@@ -24,84 +24,83 @@
     --grid-max-width: 100% !important;
 }
 
-/* Primary Frappe v16 Form Section Body & Head High-Specificity Overrides */
-html body .section-body,
-html body .section-head,
-html body .form-section .section-body,
-html body .form-section .section-head,
-html body div.section-body,
-html body div.section-head,
-html body div.form-section,
-html body div.layout-main-section,
-html body div.layout-main-section-wrapper,
-html body div.form-layout,
-html body div.form-page,
-html body div.frappe-card,
-html body div.page-body,
-html body div.page-container,
-.section-body,
-.section-head,
-.form-section .section-body,
-.form-section .section-head,
-div.section-body,
-div.section-head {
+/* Outer Page & Layout Container Wrappers (Full Screen Width) */
+html body .page-container,
+html body .page-body,
+html body .page-wrapper,
+html body .page-content,
+html body .layout-main-section-wrapper,
+html body .body-sidebar-container,
+html body [data-page-route],
+.page-container,
+.page-body,
+.page-wrapper,
+.page-content,
+.layout-main-section-wrapper,
+.body-sidebar-container {
     max-width: 100% !important;
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
 
-/* Supporting Page & Form Layout Wrappers */
-html body .container,
-html body .container-fluid,
-html body .container-sm,
-html body .container-md,
-html body .container-lg,
-html body .container-xl,
-html body .container-xxl,
-html body .page-container,
-html body .page-body,
-html body .page-wrapper,
-html body .page-content,
+/* Flexbox Layout Main Section (Takes remaining space beside right sidebar) */
 html body .layout-main,
-html body .layout-main-section-wrapper,
+.layout-main {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
 html body .layout-main-section,
-html body .body-sidebar-container,
-html body .form-page,
-html body .form-layout,
-html body .form-container,
-html body .form-body,
+.layout-main-section {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Preserve Right Form Sidebar (Attachments, Print, Tags, Assignee, Timeline) */
+html body .layout-side-section,
+html body .form-sidebar,
+html body .form-sidebar-container,
+.layout-side-section,
+.form-sidebar,
+.form-sidebar-container {
+    flex: 0 0 260px !important;
+    width: 260px !important;
+    min-width: 240px !important;
+    max-width: 280px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Primary Form Section Body, Head & Card Full-Width Overrides */
+html body .section-body,
+html body .section-head,
 html body .form-section,
-html body .frappe-card,
-html body .page-card,
-html body .form-page-container,
-html body .form-dashboard,
-html body .form-tabs,
-.container,
-.container-fluid,
-.container-sm,
-.container-md,
-.container-lg,
-.container-xl,
-.container-xxl,
-.page-container,
-.page-body,
-.page-wrapper,
-.page-content,
-.layout-main,
-.layout-main-section-wrapper,
-.layout-main-section,
-.body-sidebar-container,
-.form-page,
-.form-layout,
-.form-container,
-.form-body,
+html body .form-section .section-body,
+html body .form-section .section-head,
+html body div.section-body,
+html body div.section-head,
+html body div.form-section,
+html body div.form-layout,
+html body div.form-page,
+html body div.frappe-card,
+.section-body,
+.section-head,
 .form-section,
-.frappe-card,
-.page-card,
-.form-page-container,
-.form-dashboard,
-.form-tabs {
+.form-section .section-body,
+.form-section .section-head,
+div.section-body,
+div.section-head,
+div.form-section,
+.form-layout,
+.form-page,
+.frappe-card {
     max-width: 100% !important;
     width: 100% !important;
     margin-left: 0 !important;
@@ -122,4 +121,5 @@ html body .grid-row-open,
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+
 

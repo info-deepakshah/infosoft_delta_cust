@@ -48,12 +48,19 @@ frappe.ui.form.on(cur_frm.doctype, {
             }
 
             // Direct DOM property enforcement for v16 dynamic rendering
-            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .layout-main-section, .layout-main-section-wrapper, .form-layout, .form-page, .frappe-card, .page-container, .page-body';
+            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .form-layout, .form-page, .frappe-card';
             document.querySelectorAll(targetSelectors).forEach(function(el) {
                 el.style.setProperty('max-width', '100%', 'important');
                 el.style.setProperty('width', '100%', 'important');
                 el.style.setProperty('margin-left', '0px', 'important');
                 el.style.setProperty('margin-right', '0px', 'important');
+            });
+            document.querySelectorAll('.layout-side-section, .form-sidebar, .form-sidebar-container').forEach(function(el) {
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('visibility', 'visible', 'important');
+                el.style.setProperty('opacity', '1', 'important');
+                el.style.setProperty('width', '260px', 'important');
+                el.style.setProperty('flex', '0 0 260px', 'important');
             });
         } catch (e) {
             console.error('[Full Width Customization] Error enforcing layout:', e);

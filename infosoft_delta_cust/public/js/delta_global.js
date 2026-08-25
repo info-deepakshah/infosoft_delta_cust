@@ -248,56 +248,86 @@
                         --content-max-width: 100% !important;
                         --container-width: 100% !important;
                         --layout-main-width: 100% !important;
+                        --section-max-width: 100% !important;
+                        --form-section-max-width: 100% !important;
+                        --grid-max-width: 100% !important;
                     }
-                    :root, html, body {
+                    :root, html, body, [data-theme], [data-page-route] {
                         --page-max-width: 100% !important;
                         --form-max-width: 100% !important;
                         --content-max-width: 100% !important;
                         --container-width: 100% !important;
                         --layout-main-width: 100% !important;
+                        --section-max-width: 100% !important;
+                        --form-section-max-width: 100% !important;
+                        --grid-max-width: 100% !important;
                     }
-                    html body .section-body,
-                    html body .section-head,
-                    html body .form-section .section-body,
-                    html body .form-section .section-head,
-                    html body div.section-body,
-                    html body div.section-head,
-                    .section-body,
-                    .section-head,
-                    .form-section .section-body,
-                    .form-section .section-head,
-                    div.section-body,
-                    div.section-head {
+                    html body .page-container,
+                    html body .page-body,
+                    html body .page-wrapper,
+                    html body .page-content,
+                    html body .layout-main-section-wrapper,
+                    html body .body-sidebar-container,
+                    .page-container,
+                    .page-body,
+                    .page-wrapper,
+                    .page-content,
+                    .layout-main-section-wrapper,
+                    .body-sidebar-container {
                         max-width: 100% !important;
                         width: 100% !important;
                         margin-left: 0 !important;
                         margin-right: 0 !important;
                     }
-                    .container,
-                    .container-fluid,
-                    .container-sm,
-                    .container-md,
-                    .container-lg,
-                    .container-xl,
-                    .container-xxl,
-                    .page-container,
-                    .page-body,
-                    .page-wrapper,
-                    .page-content,
-                    .layout-main,
-                    .layout-main-section-wrapper,
-                    .layout-main-section,
-                    .body-sidebar-container,
-                    .form-page,
-                    .form-layout,
-                    .form-container,
-                    .form-body,
+                    html body .layout-main, .layout-main {
+                        display: flex !important;
+                        width: 100% !important;
+                        max-width: 100% !important;
+                    }
+                    html body .layout-main-section, .layout-main-section {
+                        flex: 1 1 auto !important;
+                        min-width: 0 !important;
+                        max-width: 100% !important;
+                        width: auto !important;
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                    }
+                    html body .layout-side-section,
+                    html body .form-sidebar,
+                    html body .form-sidebar-container,
+                    .layout-side-section,
+                    .form-sidebar,
+                    .form-sidebar-container {
+                        flex: 0 0 260px !important;
+                        width: 260px !important;
+                        min-width: 240px !important;
+                        max-width: 280px !important;
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+                    html body .section-body,
+                    html body .section-head,
+                    html body .form-section,
+                    html body .form-section .section-body,
+                    html body .form-section .section-head,
+                    html body div.section-body,
+                    html body div.section-head,
+                    html body div.form-section,
+                    html body div.form-layout,
+                    html body div.form-page,
+                    html body div.frappe-card,
+                    .section-body,
+                    .section-head,
                     .form-section,
-                    .frappe-card,
-                    .page-card,
-                    .form-page-container,
-                    .form-dashboard,
-                    .form-tabs {
+                    .form-section .section-body,
+                    .form-section .section-head,
+                    div.section-body,
+                    div.section-head,
+                    div.form-section,
+                    .form-layout,
+                    .form-page,
+                    .frappe-card {
                         max-width: 100% !important;
                         width: 100% !important;
                         margin-left: 0 !important;
@@ -316,17 +346,26 @@
                 const target = document.head || document.documentElement || document.body;
                 if (target) {
                     target.appendChild(style);
-                    console.log("[Global Customization] Successfully injected standalone v16 full-width styles!");
+                    console.log("[Global Customization] Successfully injected standalone v16 full-width styles with sidebar preservation!");
                 }
             }
 
             // Direct DOM Property Enforcement for Frappe v16 inline styles
-            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .layout-main-section, .layout-main-section-wrapper, .form-layout, .form-page, .frappe-card, .page-container, .page-body';
+            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .form-layout, .form-page, .frappe-card';
             document.querySelectorAll(targetSelectors).forEach(function(el) {
                 el.style.setProperty('max-width', '100%', 'important');
                 el.style.setProperty('width', '100%', 'important');
                 el.style.setProperty('margin-left', '0px', 'important');
                 el.style.setProperty('margin-right', '0px', 'important');
+            });
+
+            // Preserve right sidebar visibility explicitly
+            document.querySelectorAll('.layout-side-section, .form-sidebar, .form-sidebar-container').forEach(function(el) {
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('visibility', 'visible', 'important');
+                el.style.setProperty('opacity', '1', 'important');
+                el.style.setProperty('width', '260px', 'important');
+                el.style.setProperty('flex', '0 0 260px', 'important');
             });
 
             // Attach MutationObserver to document.documentElement (always ready)
@@ -338,6 +377,13 @@
                         el.style.setProperty('width', '100%', 'important');
                         el.style.setProperty('margin-left', '0px', 'important');
                         el.style.setProperty('margin-right', '0px', 'important');
+                    });
+                    document.querySelectorAll('.layout-side-section, .form-sidebar, .form-sidebar-container').forEach(function(el) {
+                        el.style.setProperty('display', 'block', 'important');
+                        el.style.setProperty('visibility', 'visible', 'important');
+                        el.style.setProperty('opacity', '1', 'important');
+                        el.style.setProperty('width', '260px', 'important');
+                        el.style.setProperty('flex', '0 0 260px', 'important');
                     });
                 });
                 window.__delta_section_observer.observe(obsTarget, {
