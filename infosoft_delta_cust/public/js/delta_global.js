@@ -321,7 +321,8 @@
             }
 
             // Direct DOM Property Enforcement for Frappe v16 inline styles
-            document.querySelectorAll('.section-body, .section-head, .form-section .section-body').forEach(function(el) {
+            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .layout-main-section, .layout-main-section-wrapper, .form-layout, .form-page, .frappe-card, .page-container, .page-body';
+            document.querySelectorAll(targetSelectors).forEach(function(el) {
                 el.style.setProperty('max-width', '100%', 'important');
                 el.style.setProperty('width', '100%', 'important');
                 el.style.setProperty('margin-left', '0px', 'important');
@@ -332,7 +333,7 @@
             const obsTarget = document.documentElement || document.body;
             if (!window.__delta_section_observer && typeof MutationObserver !== 'undefined' && obsTarget) {
                 window.__delta_section_observer = new MutationObserver(function() {
-                    document.querySelectorAll('.section-body, .section-head, .form-section .section-body').forEach(function(el) {
+                    document.querySelectorAll(targetSelectors).forEach(function(el) {
                         el.style.setProperty('max-width', '100%', 'important');
                         el.style.setProperty('width', '100%', 'important');
                         el.style.setProperty('margin-left', '0px', 'important');

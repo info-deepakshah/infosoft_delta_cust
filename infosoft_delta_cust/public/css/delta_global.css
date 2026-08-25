@@ -8,14 +8,20 @@
     --content-max-width: 100% !important;
     --container-width: 100% !important;
     --layout-main-width: 100% !important;
+    --section-max-width: 100% !important;
+    --form-section-max-width: 100% !important;
+    --grid-max-width: 100% !important;
 }
 
-:root, html, body {
+:root, html, body, [data-theme], [data-page-route] {
     --page-max-width: 100% !important;
     --form-max-width: 100% !important;
     --content-max-width: 100% !important;
     --container-width: 100% !important;
     --layout-main-width: 100% !important;
+    --section-max-width: 100% !important;
+    --form-section-max-width: 100% !important;
+    --grid-max-width: 100% !important;
 }
 
 /* Primary Frappe v16 Form Section Body & Head High-Specificity Overrides */
@@ -25,6 +31,14 @@ html body .form-section .section-body,
 html body .form-section .section-head,
 html body div.section-body,
 html body div.section-head,
+html body div.form-section,
+html body div.layout-main-section,
+html body div.layout-main-section-wrapper,
+html body div.form-layout,
+html body div.form-page,
+html body div.frappe-card,
+html body div.page-body,
+html body div.page-container,
 .section-body,
 .section-head,
 .form-section .section-body,
@@ -38,6 +52,31 @@ div.section-head {
 }
 
 /* Supporting Page & Form Layout Wrappers */
+html body .container,
+html body .container-fluid,
+html body .container-sm,
+html body .container-md,
+html body .container-lg,
+html body .container-xl,
+html body .container-xxl,
+html body .page-container,
+html body .page-body,
+html body .page-wrapper,
+html body .page-content,
+html body .layout-main,
+html body .layout-main-section-wrapper,
+html body .layout-main-section,
+html body .body-sidebar-container,
+html body .form-page,
+html body .form-layout,
+html body .form-container,
+html body .form-body,
+html body .form-section,
+html body .frappe-card,
+html body .page-card,
+html body .form-page-container,
+html body .form-dashboard,
+html body .form-tabs,
 .container,
 .container-fluid,
 .container-sm,
@@ -70,6 +109,10 @@ div.section-head {
 }
 
 /* Child table grids */
+html body .form-grid,
+html body .grid-body,
+html body .grid-row,
+html body .grid-row-open,
 .form-grid,
 .grid-body,
 .grid-row,
@@ -79,3 +122,4 @@ div.section-head {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+

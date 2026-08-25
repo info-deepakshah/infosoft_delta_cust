@@ -48,7 +48,8 @@ frappe.ui.form.on(cur_frm.doctype, {
             }
 
             // Direct DOM property enforcement for v16 dynamic rendering
-            document.querySelectorAll('.section-body, .section-head, .form-section .section-body').forEach(function(el) {
+            const targetSelectors = '.section-body, .section-head, .form-section, .form-section .section-body, .layout-main-section, .layout-main-section-wrapper, .form-layout, .form-page, .frappe-card, .page-container, .page-body';
+            document.querySelectorAll(targetSelectors).forEach(function(el) {
                 el.style.setProperty('max-width', '100%', 'important');
                 el.style.setProperty('width', '100%', 'important');
                 el.style.setProperty('margin-left', '0px', 'important');

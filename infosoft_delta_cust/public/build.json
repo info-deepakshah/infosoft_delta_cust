@@ -1,4 +1,10 @@
 {
+    "css/delta_global.css": [
+        "public/css/delta_global.css"
+    ],
+    "js/delta_global.js": [
+        "public/js/delta_global.js"
+    ],
     "css/delta_global.min.css": [
         "public/css/delta_global.css"
     ],
@@ -6,3 +12,4 @@
         "public/js/delta_global.js"
     ]
 }
+

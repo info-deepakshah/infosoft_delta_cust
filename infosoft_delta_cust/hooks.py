@@ -25,8 +25,14 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/infosoft_delta_cust/css/delta_global.css"
-app_include_js = "/assets/infosoft_delta_cust/js/delta_global.js"
+app_include_css = [
+    "/assets/infosoft_delta_cust/css/delta_global.css",
+    "/assets/infosoft_delta_cust/css/delta_global.min.css"
+]
+app_include_js = [
+    "/assets/infosoft_delta_cust/js/delta_global.js",
+    "/assets/infosoft_delta_cust/js/delta_global.min.js"
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/infosoft_delta_cust/css/infosoft_delta_cust.css"
