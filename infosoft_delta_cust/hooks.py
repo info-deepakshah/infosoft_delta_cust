@@ -25,14 +25,14 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = [
-    "/assets/infosoft_delta_cust/css/delta_global.css",
-    "/assets/infosoft_delta_cust/css/delta_global.min.css"
-]
-app_include_js = [
-    "/assets/infosoft_delta_cust/js/delta_global.js",
-    "/assets/infosoft_delta_cust/js/delta_global.min.js"
-]
+# app_include_css = [
+#     "/assets/infosoft_delta_cust/css/delta_global.css",
+#     "/assets/infosoft_delta_cust/css/delta_global.min.css"
+# ]
+# app_include_js = [
+#     "/assets/infosoft_delta_cust/js/delta_global.js",
+#     "/assets/infosoft_delta_cust/js/delta_global.min.js"
+# ]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/infosoft_delta_cust/css/infosoft_delta_cust.css"
@@ -202,7 +202,7 @@ app_include_js = [
 
 # Migration Events
 # ----------------
-after_migrate = ["infosoft_delta_cust.setup.install_full_width_client_script"]
+# after_migrate = ["infosoft_delta_cust.setup.install_full_width_client_script"]
 
 # Job Events
 # ----------
@@ -249,5 +249,6 @@ after_migrate = ["infosoft_delta_cust.setup.install_full_width_client_script"]
 
 
 override_doctype_class = {
-    "Request for Quotation": "infosoft_delta_cust.overrides.request_for_quotation.CustomRequestforQuotation"
+    "Request for Quotation": "infosoft_delta_cust.overrides.request_for_quotation.CustomRequestforQuotation",
+    "Purchase Order": "infosoft_delta_cust.overrides.purchase_order.CustomPurchaseOrder",
 }
