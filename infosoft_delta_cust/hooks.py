@@ -25,14 +25,8 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = [
-#     "/assets/infosoft_delta_cust/css/delta_global.css",
-#     "/assets/infosoft_delta_cust/css/delta_global.min.css"
-# ]
-# app_include_js = [
-#     "/assets/infosoft_delta_cust/js/delta_global.js",
-#     "/assets/infosoft_delta_cust/js/delta_global.min.js"
-# ]
+# app_include_css = "/assets/infosoft_delta_cust/css/infosoft_delta_cust.css"
+# app_include_js = "/assets/infosoft_delta_cust/js/infosoft_delta_cust.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/infosoft_delta_cust/css/infosoft_delta_cust.css"
@@ -49,7 +43,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Request for Quotation": "public/js/request_for_quotation.js",
+	"Purchase Order": "public/js/purchase_order.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -89,7 +86,8 @@ app_license = "mit"
 # ------------
 
 # before_install = "infosoft_delta_cust.install.before_install"
-# after_install = "infosoft_delta_cust.install.after_install"
+after_install = "infosoft_delta_cust.install.setup_custom_fields"
+after_migrate = ["infosoft_delta_cust.install.setup_custom_fields"]
 
 # Uninstallation
 # ------------
@@ -200,10 +198,6 @@ app_license = "mit"
 
 # ignore_links_on_delete = ["Communication", "ToDo"]
 
-# Migration Events
-# ----------------
-# after_migrate = ["infosoft_delta_cust.setup.install_full_width_client_script"]
-
 # Job Events
 # ----------
 # before_job = ["infosoft_delta_cust.utils.before_job"]
@@ -248,7 +242,13 @@ app_license = "mit"
 # }
 
 
+override_whitelisted_methods = {
+	"erpnext.buying.doctype.request_for_quotation.request_for_quotation.send_supplier_emails": (
+		"infosoft_delta_cust.overrides.request_for_quotation.send_supplier_emails"
+	),
+}
+
 override_doctype_class = {
-    "Request for Quotation": "infosoft_delta_cust.overrides.request_for_quotation.CustomRequestforQuotation",
-    "Purchase Order": "infosoft_delta_cust.overrides.purchase_order.CustomPurchaseOrder",
+	"Request for Quotation": "infosoft_delta_cust.overrides.request_for_quotation.CustomRequestforQuotation",
+	"Purchase Order": "infosoft_delta_cust.overrides.purchase_order.CustomPurchaseOrder",
 }
