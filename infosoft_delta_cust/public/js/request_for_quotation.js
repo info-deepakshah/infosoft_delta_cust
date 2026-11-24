@@ -6,6 +6,7 @@ frappe.ui.form.on("Request for Quotation", {
 				const data = (r && r.message) || {};
 				const emails = data.emails || [];
 				const default_sender = data.default_sender || "";
+				const default_cc = data.default_cc || "";
 
 				if (frm.fields_dict.custom_sender_email) {
 					frm.set_df_property("custom_sender_email", "options", emails);
@@ -13,9 +14,23 @@ frappe.ui.form.on("Request for Quotation", {
 						frm.set_value("custom_sender_email", default_sender);
 					}
 				}
+				if (frm.fields_dict.custom_internal_cc_emails && !frm.doc.custom_internal_cc_emails && default_cc && frm.is_new()) {
+					frm.set_value("custom_internal_cc_emails", default_cc);
+				}
+
+				// Avoid duplicate button when POD3 Request for Quotation Client Script (openRfqEmailDispatchDialog) is active
+				if (typeof window.openRfqEmailDispatchDialog === "function") {
+					return;
+				}
 
 				if (frm.doc.docstatus === 1) {
 					frm.add_custom_button(__("Send RFQ Emails"), () => {
+						const initialSender =
+							(frm.doc.custom_email_sent && frm.doc.custom_sender_email)
+								? frm.doc.custom_sender_email
+								: (default_sender || frm.doc.custom_sender_email || "");
+						const initialCc = (frm.doc.custom_internal_cc_emails || "").trim() || default_cc;
+
 						const d = new frappe.ui.Dialog({
 							title: __("Send RFQ Emails to Suppliers"),
 							fields: [
@@ -24,14 +39,16 @@ frappe.ui.form.on("Request for Quotation", {
 									fieldname: "sender_email",
 									fieldtype: emails.length ? "Select" : "Data",
 									options: emails,
-									default: frm.doc.custom_sender_email || default_sender,
+									default: initialSender,
 									reqd: emails.length ? 1 : 0,
+									description: __("Defaults to logged-in user's Outgoing Email Account."),
 								},
 								{
 									label: __("Internal CC Emails (comma-separated)"),
 									fieldname: "cc_emails",
 									fieldtype: "Small Text",
-									default: frm.doc.custom_internal_cc_emails || "",
+									default: initialCc,
+									description: __("Defaults to logged-in user. Add more comma-separated emails if needed."),
 								},
 							],
 							primary_action_label: __("Send Emails"),

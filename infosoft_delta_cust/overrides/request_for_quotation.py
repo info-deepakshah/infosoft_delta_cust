@@ -6,7 +6,8 @@ from frappe import _
 from frappe.utils import cint
 
 from infosoft_delta_cust.utils.email_utils import (
-	get_default_purchase_sender,
+	get_default_sender_for_user,
+	get_logged_in_user_email,
 	parse_cc_emails,
 	resolve_sender_email,
 )
@@ -17,17 +18,21 @@ class CustomRequestforQuotation(RequestforQuotation):
 	Custom Override for Request for Quotation:
 	1. Prevents automatic email dispatch immediately on Submit (emails go out only when triggered)
 	2. Sends RFQ email to Standard Suppliers (`self.suppliers`) and Prospective Suppliers (`self.custom_adhoc_suppliers`)
-	3. Supports selectable `From Email` (`custom_sender_email` or `sender_email` param), defaulting to `purchase@...`
-	4. Attaches isolated internal CC list (`custom_internal_cc_emails`) to EVERY supplier email with `expose_recipients="header"`
-	5. Updates child/parent email status directly via `db_set` (safe on submitted documents)
+	3. Supports selectable `From Email` (`custom_sender_email` or `sender_email` param), defaulting to logged-in user's Outgoing Email Account
+	4. Defaults Internal CC (`custom_internal_cc_emails`) to the logged-in user (comma-separated editable) with `expose_recipients="header"`
+	5. Renders vendor-isolated PDF per supplier so competitors are never exposed on the PDF
 	"""
 
 	def before_validate(self):
 		super().before_validate()
 		if hasattr(self, "custom_sender_email") and not (self.custom_sender_email or "").strip():
-			default_sender = get_default_purchase_sender()
+			default_sender = get_default_sender_for_user()
 			if default_sender:
 				self.custom_sender_email = default_sender
+		if hasattr(self, "custom_internal_cc_emails") and self.is_new() and not (self.custom_internal_cc_emails or "").strip():
+			user_email = get_logged_in_user_email()
+			if user_email:
+				self.custom_internal_cc_emails = user_email
 
 	def on_submit(self):
 		self.db_set("status", "Submitted")
@@ -64,6 +69,28 @@ class CustomRequestforQuotation(RequestforQuotation):
 		)
 		return subject, message
 
+	def _build_supplier_pdf(self, supplier_id: str | None = None) -> list:
+		try:
+			rfq_render = frappe.get_doc(self.doctype, self.name)
+			if supplier_id:
+				rfq_render.vendor = supplier_id
+				rfq_render.set(
+					"suppliers",
+					[sr for sr in (rfq_render.get("suppliers") or []) if sr.supplier == supplier_id],
+				)
+			else:
+				rfq_render.vendor = ""
+				rfq_render.set("suppliers", [])
+			pdf_data = frappe.attach_print(self.doctype, self.name, file_name=self.name, doc=rfq_render)
+			return [pdf_data] if pdf_data else []
+		except Exception:
+			try:
+				pdf_fallback = frappe.attach_print(self.doctype, self.name, file_name=self.name, print_format=None)
+				return [pdf_fallback] if pdf_fallback else []
+			except Exception as e:
+				frappe.log_error(f"Error generating RFQ PDF print for {self.name}: {e}")
+				return []
+
 	@frappe.whitelist()
 	def send_supplier_emails(
 		self,
@@ -77,30 +104,23 @@ class CustomRequestforQuotation(RequestforQuotation):
 			frappe.throw(_("Request for Quotation {0} must be submitted before sending emails.").format(self.name))
 
 		sender = resolve_sender_email(sender_email, self)
-		if sender_email and frappe.db.has_column("Request for Quotation", "custom_sender_email"):
-			self.db_set("custom_sender_email", sender or "", update_modified=False)
+		if sender and frappe.db.has_column("Request for Quotation", "custom_sender_email"):
+			self.db_set("custom_sender_email", sender, update_modified=False)
 
-		cc_raw = (
-			cc_emails
-			if cc_emails is not None
-			else (getattr(self, "custom_internal_cc_emails", None) or "")
-		)
-		if cc_emails is not None and frappe.db.has_column("Request for Quotation", "custom_internal_cc_emails"):
+		if cc_emails is not None:
+			cc_raw = cc_emails
+		else:
+			cc_raw = (getattr(self, "custom_internal_cc_emails", None) or "").strip() or get_logged_in_user_email()
+
+		if frappe.db.has_column("Request for Quotation", "custom_internal_cc_emails"):
 			self.db_set("custom_internal_cc_emails", cc_raw.strip(), update_modified=False)
 
 		default_subject, default_message = self._get_rfq_email_template()
 
-		attachments = []
-		try:
-			pdf_data = frappe.attach_print(self.doctype, self.name, file_name=self.name, print_format=None)
-			if pdf_data:
-				attachments.append(pdf_data)
-		except Exception as e:
-			frappe.log_error(f"Error generating RFQ PDF print for {self.name}: {e}")
-
 		now_time = frappe.utils.now()
 		current_user = frappe.session.user
 		sent_count = 0
+		sent_recipients: list[str] = []
 
 		# 1. Dispatch to Standard Suppliers (self.suppliers)
 		for rfq_supplier in self.suppliers or []:
@@ -127,11 +147,13 @@ class CustomRequestforQuotation(RequestforQuotation):
 				message = default_message
 
 			cc_for_row = parse_cc_emails(cc_raw, exclude_recipient=supp_email)
+			attachments = self._build_supplier_pdf(rfq_supplier.supplier)
 
 			try:
 				frappe.sendmail(
 					recipients=[supp_email],
 					sender=sender,
+					reply_to=sender,
 					cc=list(cc_for_row) if cc_for_row else None,
 					subject=subject,
 					message=message,
@@ -149,6 +171,7 @@ class CustomRequestforQuotation(RequestforQuotation):
 				):
 					rfq_supplier.db_set("custom_added_on", now_time, update_modified=False)
 				sent_count += 1
+				sent_recipients.append(supp_email)
 			except Exception as e:
 				frappe.log_error(f"Failed sending RFQ email to {supp_email}: {e}")
 
@@ -174,11 +197,13 @@ class CustomRequestforQuotation(RequestforQuotation):
 				message = default_message
 
 			cc_for_row = parse_cc_emails(cc_raw, exclude_recipient=adhoc_email)
+			attachments = self._build_supplier_pdf(None)
 
 			try:
 				frappe.sendmail(
 					recipients=[adhoc_email],
 					sender=sender,
+					reply_to=sender,
 					cc=list(cc_for_row) if cc_for_row else None,
 					subject=subject,
 					message=message,
@@ -193,6 +218,7 @@ class CustomRequestforQuotation(RequestforQuotation):
 				if frappe.db.has_column(adhoc_supplier.doctype, "added_on") and not adhoc_supplier.get("added_on"):
 					adhoc_supplier.db_set("added_on", now_time, update_modified=False)
 				sent_count += 1
+				sent_recipients.append(adhoc_email)
 			except Exception as e:
 				frappe.log_error(f"Failed sending RFQ email to prospective {adhoc_email}: {e}")
 
@@ -202,12 +228,13 @@ class CustomRequestforQuotation(RequestforQuotation):
 				("custom_email_sent", 1),
 				("custom_email_sent_on", now_time),
 				("custom_email_sent_by", current_user),
+				("custom_email_recipient", ", ".join(sent_recipients)),
 			]:
 				if frappe.db.has_column("Request for Quotation", fld):
 					self.db_set(fld, val, update_modified=False)
 
 			frappe.msgprint(
-				_("RFQ emails successfully dispatched to {0} supplier(s) with CC.").format(sent_count)
+				_("RFQ emails successfully dispatched from {0} to {1} supplier(s).").format(sender or "default", sent_count)
 			)
 		else:
 			frappe.msgprint(_("No valid supplier email addresses found to send."))
@@ -226,12 +253,13 @@ class CustomRequestforQuotation(RequestforQuotation):
 	def send_email(self, data, sender, subject, message, attachments):
 		"""Fallback override if `send_email` is called directly by core ERPNext routines."""
 		resolved_sender = resolve_sender_email(None, self) or sender
-		cc_raw = (getattr(self, "custom_internal_cc_emails", None) or "").strip()
+		cc_raw = (getattr(self, "custom_internal_cc_emails", None) or "").strip() or get_logged_in_user_email()
 		cc_list = parse_cc_emails(cc_raw, exclude_recipient=data.email_id)
 
 		frappe.sendmail(
 			recipients=[data.email_id],
 			sender=resolved_sender,
+			reply_to=resolved_sender,
 			cc=list(cc_list) if cc_list else None,
 			subject=subject,
 			message=message,
