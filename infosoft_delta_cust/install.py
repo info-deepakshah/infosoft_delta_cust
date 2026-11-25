@@ -7,25 +7,32 @@ from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 def setup_custom_fields() -> None:
 	"""
 	Ensure `custom_internal_cc_emails` and `custom_sender_email` exist on Request for Quotation
-	(visible for RFQ DocType flow) and Purchase Order (hidden on PO Form — managed via POD3 flow).
+	and Purchase Order without overwriting existing separate-tab (`POD3 Details` / `POD Details`) placement.
 	"""
 	custom_fields: dict[str, list[dict]] = {}
 
 	target_configs = [
-		("Request for Quotation", "transaction_date", 0),
-		("Purchase Order", "contact_email", 1),
+		("Request for Quotation", "custom_pod3_rfq_email_col", "transaction_date", 0),
+		("Purchase Order", "custom_email_recipient", "contact_email", 1),
 	]
 
-	for doctype, fallback_after, is_hidden in target_configs:
+	for doctype, preferred_after, fallback_after, is_hidden in target_configs:
 		if not frappe.db.exists("DocType", doctype):
 			continue
 
-		fields_to_ensure: list[dict] = [
+		anchor = (
+			preferred_after
+			if frappe.db.exists("Custom Field", f"{doctype}-{preferred_after}")
+			else fallback_after
+		)
+
+		candidate_fields: list[dict] = [
 			{
 				"fieldname": "custom_internal_cc_emails",
 				"label": "Internal CC Emails",
 				"fieldtype": "Small Text",
-				"insert_after": fallback_after,
+				"insert_after": anchor,
+				"default": "",
 				"allow_on_submit": 1,
 				"hidden": is_hidden,
 				"description": "Comma-separated internal email addresses to CC when sending to supplier.",
@@ -42,7 +49,13 @@ def setup_custom_fields() -> None:
 			},
 		]
 
-		custom_fields[doctype] = fields_to_ensure
+		missing_fields = [
+			f
+			for f in candidate_fields
+			if not frappe.db.exists("Custom Field", f"{doctype}-{f['fieldname']}")
+		]
+		if missing_fields:
+			custom_fields[doctype] = missing_fields
 
 	if custom_fields:
-		create_custom_fields(custom_fields, update=True)
+		create_custom_fields(custom_fields, update=False)
